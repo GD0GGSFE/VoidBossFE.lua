@@ -1,1 +1,105 @@
+-- GD0GGS FE Client Script
+-- Works fully on the client and optimized for multiple executors
 
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:FindFirstChildOfClass("Humanoid")
+local UserInputService = game:GetService("UserInputService")
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ToggleButton = Instance.new("TextButton")
+local ReanimateButton = Instance.new("TextButton")
+local RespawnButton = Instance.new("TextButton")
+local isFlingEnabled = true
+
+-- Accessory IDs (Replace with your own if needed)
+local accessoryIDs = {
+    "13289322729", -- Winter Gloves
+    "13114349080", -- SCP 035 Mask
+    "11030103257" -- Black Horns
+}
+
+-- Function to apply accessories (Executor Friendly)
+local function applyAccessories()
+    for _, id in ipairs(accessoryIDs) do
+        local success, accessory = pcall(function()
+            return game:GetObjects("rbxassetid://" .. id)[1]
+        end)
+        
+        if success and accessory and humanoid then
+            humanoid:AddAccessory(accessory)
+        end
+    end
+end
+
+-- Player Fling Attack (Optimized for multiple executors)
+local function flingTarget(target)
+    if not isFlingEnabled then return end
+    if target and target:IsA("Model") and target:FindFirstChild("HumanoidRootPart") then
+        local root = target.HumanoidRootPart
+        
+        -- Check if the target can collide
+        if root.CanCollide then
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Velocity = Vector3.new(math.random(-80,80), 150, math.random(-80,80))
+            bodyVelocity.MaxForce = Vector3.new(5000, 5000, 5000)
+            bodyVelocity.Parent = root
+            
+            game.Debris:AddItem(bodyVelocity, 0.2)
+        end
+    end
+end
+
+-- GUI Setup
+ScreenGui.Parent = game.CoreGui
+Frame.Parent = ScreenGui
+Frame.Size = UDim2.new(0, 150, 0, 150)
+Frame.Position = UDim2.new(0, 10, 0, 10)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.Active = true
+Frame.Draggable = true
+
+ToggleButton.Parent = Frame
+ToggleButton.Size = UDim2.new(1, 0, 0.3, 0)
+ToggleButton.Position = UDim2.new(0, 0, 0, 0)
+ToggleButton.Text = "Fling: ON"
+ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+ToggleButton.MouseButton1Click:Connect(function()
+    isFlingEnabled = not isFlingEnabled
+    ToggleButton.Text = "Fling: " .. (isFlingEnabled and "ON" or "OFF")
+    ToggleButton.BackgroundColor3 = isFlingEnabled and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100)
+end)
+
+ReanimateButton.Parent = Frame
+ReanimateButton.Size = UDim2.new(1, 0, 0.3, 0)
+ReanimateButton.Position = UDim2.new(0, 0, 0.35, 0)
+ReanimateButton.Text = "Reanimate"
+ReanimateButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+ReanimateButton.MouseButton1Click:Connect(function()
+    applyAccessories()
+    print("Player reanimated into GD0GGS FE")
+end)
+
+RespawnButton.Parent = Frame
+RespawnButton.Size = UDim2.new(1, 0, 0.3, 0)
+RespawnButton.Position = UDim2.new(0, 0, 0.7, 0)
+RespawnButton.Text = "Respawn"
+RespawnButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+RespawnButton.MouseButton1Click:Connect(function()
+    character:BreakJoints()
+end)
+
+-- Apply Accessories when the player spawns
+applyAccessories()
+
+-- Detect when the player clicks to fling
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mouse = player:GetMouse()
+        local target = mouse.Target and mouse.Target.Parent
+        flingTarget(target)
+    end
+end)
+
+print("GD0GGS FE Client Script Loaded!")
