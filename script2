@@ -1,0 +1,27 @@
+-- GD0GGS FE Client Script (Obfuscated Version)
+local function XG2(...) return ... end
+local function M3H() return {"13289322729", "13114349080", "11030103257"} end
+local F7D, ZP1, V89 = game:GetService, game.Players.LocalPlayer, "Humanoid"
+local K4L, S2J, A8N = F7D("UserInputService"), game.CoreGui, game:GetObjects
+local P9X, Q5M, J1K = Instance.new, {}, "rbxassetid://"
+local function C6W() local A=ZP1.Character or ZP1.CharacterAdded:Wait() return A:FindFirstChildOfClass(V89) end
+local function N4T(A) if not A or not A:IsA("Model") then return end local B = A:FindFirstChild("HumanoidRootPart") if not B or not B.CanCollide then return end local C=P9X("BodyVelocity") C.Velocity=Vector3.new(math.random(-80,80),150,math.random(-80,80)) C.MaxForce=Vector3.new(5000,5000,5000) C.Parent=B game.Debris:AddItem(C,0.2) end
+local function X8R()
+    for _, ID in ipairs(M3H()) do
+        local success, acc = pcall(function() return A8N(J1K .. ID)[1] end)
+        if success and acc then C6W():AddAccessory(acc) end
+    end
+end
+local G7B = P9X("ScreenGui") G7B.Parent=S2J
+local H3C, D2Y = P9X("Frame"), true
+H3C.Parent=G7B H3C.Size=UDim2.new(0,150,0,150) H3C.Position=UDim2.new(0,10,0,10) H3C.BackgroundColor3=Color3.fromRGB(50,50,50) H3C.Active=true H3C.Draggable=true
+local function W5U(A, B, C, D, E) local X=P9X("TextButton") X.Parent=A X.Size=UDim2.new(1,0,0.3,0) X.Position=UDim2.new(0,0,B,0) X.Text=C X.BackgroundColor3=Color3.fromRGB(D,E,100) return X end
+local U4Q = W5U(H3C, 0, "Fling: ON", 100, 255)
+U4Q.MouseButton1Click:Connect(function() D2Y = not D2Y U4Q.Text = "Fling: " .. (D2Y and "ON" or "OFF") U4Q.BackgroundColor3 = D2Y and Color3.fromRGB(100,255,100) or Color3.fromRGB(255,100,100) end)
+local V6O = W5U(H3C, 0.35, "Reanimate", 0, 150)
+V6O.MouseButton1Click:Connect(function() X8R() print("Player reanimated into GD0GGS FE") end)
+local T9L = W5U(H3C, 0.7, "Respawn", 255, 50)
+T9L.MouseButton1Click:Connect(function() C6W():BreakJoints() end)
+X8R()
+K4L.InputBegan:Connect(function(A, B) if B then return end if A.UserInputType == Enum.UserInputType.MouseButton1 then N4T(ZP1:GetMouse().Target and ZP1:GetMouse().Target.Parent) end end)
+print("GD0GGS FE Client Script (Obfuscated) Loaded!")
