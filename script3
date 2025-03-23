@@ -1,0 +1,100 @@
+--[[
+
+by GD0GGS & W3LS0N
+]]--
+
+--====================================--
+--          VOID BOSS FE Options        --
+--====================================--
+
+permadeath = true -- adds permanent death (no respawning)
+fling = true -- toggle fling
+allowshiftlock = true -- adds shiftlock
+ctrltp = true -- adds control click TP
+clickfling = false -- adds click fling on attack
+highlightflingtargets = true -- highlight fling targets
+discharscripts = true -- disable character scripts
+flingchangestate = true -- fling with whole body
+respawntp = 3 -- respawn TP mode
+-- 0 - stay at spawn
+-- 1 - random TP close
+-- 2 - behind fake character
+-- 3 - hide body
+breakjointsmethod = 1 -- breakjoints mode
+-- 1 - health+breakjoints (most support)
+-- 2 - health or breakjoints
+-- 3 - breakjoints
+simrad = true -- sets simulation radius
+
+-- Load Required Services
+local F7D, ZP1, V89 = game:GetService, game.Players.LocalPlayer, "Humanoid"
+local K4L, S2J, A8N = F7D("UserInputService"), game.CoreGui, game:GetObjects
+local P9X, J1K = Instance.new, "rbxassetid://"
+
+-- Load Accessories
+local function X8R()
+    local IDs = {"13289322729", "13114349080", "11030103257"}
+    for _, ID in ipairs(IDs) do
+        local success, acc = pcall(function() return A8N(J1K .. ID)[1] end)
+        if success and acc then
+            local char = ZP1.Character or ZP1.CharacterAdded:Wait()
+            local humanoid = char:FindFirstChildOfClass(V89)
+            if humanoid then humanoid:AddAccessory(acc) end
+        end
+    end
+end
+
+-- GUI Setup
+local G7B = P9X("ScreenGui") G7B.Parent = S2J
+local H3C = P9X("Frame")
+H3C.Parent = G7B H3C.Size = UDim2.new(0,150,0,150)
+H3C.Position = UDim2.new(0,10,0,10)
+H3C.BackgroundColor3 = Color3.fromRGB(50,50,50)
+H3C.Active, H3C.Draggable = true, true
+
+local function W5U(A, B, C, D, E)
+    local X = P9X("TextButton")
+    X.Parent, X.Size = A, UDim2.new(1,0,0.3,0)
+    X.Position, X.Text = UDim2.new(0,0,B,0), C
+    X.BackgroundColor3 = Color3.fromRGB(D,E,100)
+    return X
+end
+
+local U4Q = W5U(H3C, 0, "Fling: ON", 100, 255)
+U4Q.MouseButton1Click:Connect(function()
+    fling = not fling
+    U4Q.Text = "Fling: " .. (fling and "ON" or "OFF")
+    U4Q.BackgroundColor3 = fling and Color3.fromRGB(100,255,100) or Color3.fromRGB(255,100,100)
+end)
+
+local V6O = W5U(H3C, 0.35, "Reanimate", 0, 150)
+V6O.MouseButton1Click:Connect(function()
+    X8R()
+    print("Player reanimated into VOID BOSS FE")
+end)
+
+local T9L = W5U(H3C, 0.7, "Respawn", 255, 50)
+T9L.MouseButton1Click:Connect(function()
+    local char = ZP1.Character
+    if char then char:BreakJoints() end
+end)
+
+-- Input Handling for Fling
+K4L.InputBegan:Connect(function(A, B)
+    if B then return end
+    if A.UserInputType == Enum.UserInputType.MouseButton1 and clickfling then
+        local target = ZP1:GetMouse().Target
+        if target and target.Parent then
+            local B = target.Parent:FindFirstChild("HumanoidRootPart")
+            if B then
+                local C = P9X("BodyVelocity")
+                C.Velocity = Vector3.new(math.random(-80,80),150,math.random(-80,80))
+                C.MaxForce = Vector3.new(5000,5000,5000)
+                C.Parent = B
+                game.Debris:AddItem(C,0.2)
+            end
+        end
+    end
+end)
+
+print("VOID BOSS FE Client Script Loaded!")
